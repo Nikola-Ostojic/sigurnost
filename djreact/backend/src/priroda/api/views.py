@@ -1,5 +1,4 @@
 from rest_framework.generics import ListAPIView, RetrieveAPIView
-
 from priroda.models import Priroda
 from .serializers import PrirodaSerializer
 
