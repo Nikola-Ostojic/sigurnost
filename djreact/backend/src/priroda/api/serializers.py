@@ -4,4 +4,4 @@ from priroda.models import Priroda
 class PrirodaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Priroda
-        fields = ('naslov', 'sadrzaj')
+        fields = ('id','title', 'content')

@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import Prirodas from '../components/Priroda'
+import CustomForm from '../components/Form';
 
 class PrirodaList extends React.Component{
 
@@ -20,7 +21,12 @@ class PrirodaList extends React.Component{
 
     render(){
         return(
-            <Prirodas data={this.state.prirodas} />
+            <div>
+                <Prirodas data={this.state.prirodas} />
+                <br />
+                <h2>Create an article</h2>
+                <CustomForm/>
+            </div>
         )
     }
 }
