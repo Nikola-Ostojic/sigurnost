@@ -25,7 +25,10 @@ class PrirodaList extends React.Component{
                 <Prirodas data={this.state.prirodas} />
                 <br />
                 <h2>Create an article</h2>
-                <CustomForm/>
+                <CustomForm
+                    requestType="post"
+                    prirodaID={null}
+                    btnText="Create"/>
             </div>
         )
     }
