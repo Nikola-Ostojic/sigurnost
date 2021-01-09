@@ -1,2 +1,0 @@
-# sigurnost
-Projekat iz sigurnosti
