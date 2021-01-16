@@ -4,6 +4,17 @@ from PyQt5.QtWidgets import QLabel, QWidget, QProgressBar, QPushButton, QApplica
 from PyQt5.QtCore import QBasicTimer
 from PyQt5.QtGui import QImage, QPalette, QBrush, QPixmap, QMovie
 import sys
+import os
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 class CoverApplication(QMainWindow):
     def __init__(self):
@@ -17,7 +28,7 @@ class CoverApplication(QMainWindow):
         #fake code gif
         self.label = QLabel()
         self.setCentralWidget(self.label)
-        self.movie = QMovie("assets/fakecode.gif")
+        self.movie = QMovie(resource_path("fakecode.gif"))
         self.label.setMovie(self.movie)
 
         #proggres bar
@@ -37,6 +48,7 @@ class CoverApplication(QMainWindow):
         self.setGeometry(100, 100, 1000, 500)
         self.setWindowTitle('ESET Internet Security')
         self.show()
+        self.setFixedSize(1000, 500)
         
         popupWarning = QWidget()
         popupWarning.setWindowTitle('Warning')
@@ -98,7 +110,7 @@ class CoverApplication(QMainWindow):
             self.btn.setText('Stop')
             
     def setBackground(self):
-        background = QImage('assets/background.png')
+        background = QImage(resource_path("background.png"))
         background = background.scaled(1000, 500)
         pallete = QPalette()
         pallete.setBrush(QPalette.Window, QBrush(background))
